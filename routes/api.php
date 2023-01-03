@@ -47,6 +47,8 @@ Route::group([
 
     Route::post('/like', [LikeController::class, 'addLike']);
     Route::post('/unlike', [LikeController::class, 'UnLike']);
+    Route::post('/like-count', [LikeController::class, 'likeCount']);
+    Route::post('/unlike-count', [LikeController::class, 'unLikeCount']);
 
 
 

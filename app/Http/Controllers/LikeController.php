@@ -78,4 +78,40 @@ class LikeController extends AuthController
             return $this->sendResponse('success', 'successfully UnLike');
         }
     }
+
+    public function likeCount(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required|exists:posts,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $countLike=Like::where('post_id','=',$request->post_id)
+        ->where('like',1)
+        ->count();
+        return $this->sendResponse('success', ['Total Like'=>$countLike]);
+
+    }
+
+    public function unLikeCount(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'post_id' => 'required|exists:posts,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $countLike=Like::where('post_id','=',$request->post_id)
+        ->where('unlike',1)
+        ->count();
+        return $this->sendResponse('success', ['Total UnLike'=>$countLike]);
+
+    }
+
+
 }

@@ -43,9 +43,6 @@ class CommentController extends AuthController
              'body'=>'required',    
              'post_id'=>'required|exists:posts,id',  
              'parent_id'=>'required|exists:posts,id',  
-
-
-            
         ]);
 
         if($validator->fails()){
