@@ -63,4 +63,42 @@ class AuthController extends Controller
             'user' => auth()->user()
         ]);
     }
+
+    public function sendResponse($message,$result)
+    {
+        $response = [
+            'status' => true,
+            'message' => $message,
+            'data' => $result,
+            
+            
+        ];
+
+        return response()->json($response, 200);
+    }
+
+
+    public function sendError($error,$result,$code=400)
+    {
+        $response = [
+            'success' => false,
+            'message' => $error,
+            'data' => $result,
+        ];
+
+        return response()->json($response, $code);
+    }
+
+    public function wrongPass($error,$result,$code=422)
+    {
+        $response = [
+            'success' => false,
+            'message' => $error,
+            'data' => $result,
+        ];
+
+        return response()->json($response, $code);
+    }
+
+
 }
