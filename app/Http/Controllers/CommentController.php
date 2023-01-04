@@ -7,55 +7,74 @@ use App\Models\User;
 use App\Http\Controllers\AuthController;
 use Validator;
 use App\Models\Comment;
+use App\Models\Post;
 
 class CommentController extends AuthController
 {
     //
-    public function  addComment(Request $request)
+    public function addComment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            
-             'body'=>'required',  
-             'post_id'=>'required|exists:posts,id',  
-
-            
+            'body' => 'required',
+            'post_id' => 'required|exists:posts,id',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-       
+
         $addcomment = [
             'user_id' => auth()->user()->id,
-            'post_id'=>$request->post_id,
+            'post_id' => $request->post_id,
             'body' => $request->body,
         ];
         Comment::create($addcomment);
         return $this->sendResponse('success', 'successfully Add');
     }
 
-
-
-    public function  addReply(Request $request)
+    public function addReply(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            
-             'body'=>'required',    
-             'post_id'=>'required|exists:posts,id',  
-             'parent_id'=>'required|exists:posts,id',  
+            'body' => 'required',
+            'post_id' => 'required|exists:posts,id',
+            'parent_id' => 'required|exists:posts,id',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-       
+
         $addreply = [
             'user_id' => auth()->user()->id,
-            'post_id'=>$request->post_id,
-            'parent_id'=>$request->parent_id,
+            'post_id' => $request->post_id,
+            'parent_id' => $request->parent_id,
             'body' => $request->body,
         ];
         Comment::create($addreply);
         return $this->sendResponse('success', 'successfully Add');
+    }
+
+    public function viewCommentByPost(Request $request)
+    {
+       
+
+
+        $commentByPost = Comment::
+        select('comments.post_id', 'comments.body' , 'posts.title')
+        // ->where('comments.post_id', $request->post_id)
+        ->whereNull('parent_id')
+        ->join('posts', 'posts.id', 'comments.post_id')->get();
+
+
+
+        $commentByPostReply = Comment::
+        select('comments.post_id', 'comments.body' , 'posts.title')
+        // ->where('comments.post_id', $request->post_id)
+        ->where('comments.parent_id','!=','Null')
+        ->join('posts', 'posts.id', 'comments.post_id')->get();
+
+
+         return $this->sendResponse('success', [ $commentByPost, 'Reply'=>$commentByPostReply]);
+        
     }
 }

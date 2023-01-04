@@ -44,6 +44,7 @@ Route::group([
 
     Route::post('/add-comment', [CommentController::class, 'addComment']);
     Route::post('/add-reply', [CommentController::class, 'addReply']);
+    Route::post('/view-comment', [CommentController::class, 'viewCommentByPost']);
 
     Route::post('/like', [LikeController::class, 'addLike']);
     Route::post('/unlike', [LikeController::class, 'UnLike']);
@@ -64,3 +65,11 @@ Route::group([
     });
     
 });
+
+
+
+// $sets = Comment::select('body')->where('post_id', $request->post_id)->whereNull('parent_id')->get(); //get commnet for post id
+
+// $name=Post::where('id',$request->post_id)->get(); //name get for post id
+
+// dd($name,$sets); 

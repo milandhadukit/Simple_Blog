@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Models\Comment;
 use Validator;
 use App\Models\Like;
+use App\Models\Post;
 
 class LikeController extends AuthController
 {
@@ -106,6 +108,7 @@ class LikeController extends AuthController
             return response()->json($validator->errors()->toJson(), 400);
         }
 
+       
         $countLike=Like::where('post_id','=',$request->post_id)
         ->where('unlike',1)
         ->count();
