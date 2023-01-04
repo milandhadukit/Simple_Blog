@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use App\Models\Comment;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('userId', function ($user, $privileges) {
+            return $user->id == $privileges;
+        });
+        
     }
 }

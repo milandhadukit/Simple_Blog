@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use Validator;
 use App\Models\Comment;
 use App\Models\Post;
+use Illuminate\Support\Facades\Gate;
 
 class CommentController extends AuthController
 {
@@ -54,27 +55,55 @@ class CommentController extends AuthController
         return $this->sendResponse('success', 'successfully Add');
     }
 
-    public function viewCommentByPost(Request $request)
+    public function viewCommentByPost()
     {
-       
+        $commentByPost = Comment::select(
+            'comments.post_id',
+            'comments.body',
+            'posts.title'
+        )
+            // ->where('comments.post_id', $request->post_id)
+            ->whereNull('parent_id')
+            ->join('posts', 'posts.id', 'comments.post_id')
+            ->get();
 
+        $commentByPostReply = Comment::select(
+            'comments.post_id',
+            'comments.body',
+            'posts.title'
+        )
+            ->where('comments.parent_id', '!=', 'Null')
+            ->join('posts', 'posts.id', 'comments.post_id')
+            ->get();
 
-        $commentByPost = Comment::
-        select('comments.post_id', 'comments.body' , 'posts.title')
-        // ->where('comments.post_id', $request->post_id)
-        ->whereNull('parent_id')
-        ->join('posts', 'posts.id', 'comments.post_id')->get();
+        return $this->sendResponse('success', [
+            $commentByPost,
+            'Reply' => $commentByPostReply,
+        ]);
+    }
 
+    public function editComment(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'body' => 'required ',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
 
-        $commentByPostReply = Comment::
-        select('comments.post_id', 'comments.body' , 'posts.title')
-        // ->where('comments.post_id', $request->post_id)
-        ->where('comments.parent_id','!=','Null')
-        ->join('posts', 'posts.id', 'comments.post_id')->get();
+        $CommentId = Comment::find($id);
+        if (Gate::allows('userId',$CommentId->user_id)) {
 
+            // dd($CommentId->user_id,$CommentId->post_id);
 
-         return $this->sendResponse('success', [ $commentByPost, 'Reply'=>$commentByPostReply]);
-        
+            Comment::
+                where('post_id', $CommentId->post_id)
+                ->update(['body' => $request->body]);
+            return $this->sendResponse('success', 'successfully Update');
+        }
+        echo 'sorry';
+
+  
     }
 }

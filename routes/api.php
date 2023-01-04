@@ -45,6 +45,7 @@ Route::group([
     Route::post('/add-comment', [CommentController::class, 'addComment']);
     Route::post('/add-reply', [CommentController::class, 'addReply']);
     Route::post('/view-comment', [CommentController::class, 'viewCommentByPost']);
+    Route::post('/edit-comment/{id}', [CommentController::class, 'editComment']);
 
     Route::post('/like', [LikeController::class, 'addLike']);
     Route::post('/unlike', [LikeController::class, 'UnLike']);
